@@ -3,10 +3,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {Panel, PanelHeader} from '../../../components/panels';
-import {addErrorMessage, addSuccessMessage} from '../../../actionCreators/indicator';
+import {
+  addErrorMessage,
+  addLoadingMessage,
+  addSuccessMessage,
+} from '../../../actionCreators/indicator';
 import {removeTeam} from '../../../actionCreators/teams';
 import {t, tct} from '../../../locale';
 import AsyncView from '../../asyncView';
+import AvatarChooser from '../../../components/avatarChooser';
 import Button from '../../../components/buttons/button';
 import Confirm from '../../../components/confirm';
 import Field from '../components/forms/field';
@@ -84,6 +89,12 @@ export default class TeamSettings extends AsyncView {
             <JsonForm location={location} forms={teamSettingsFields} />
           </Box>
         </Form>
+
+        <AvatarChooser
+          allowGravatar={false}
+          endpoint={`/teams/${organization.slug}/${team.slug}/`}
+          model={team}
+        />
 
         {access.has('team:admin') && (
           <Panel>
