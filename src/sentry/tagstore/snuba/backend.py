@@ -82,15 +82,15 @@ class SnubaTagStorage(TagStorage):
         if group_id is not None:
             filters['issue'] = [group_id]
         conditions = [[tag, '!=', '']]
-        aggregations = [['count()', '', 'count']]
+        aggregations = [['uniq', 'tags.value', 'count']]
 
         result = snuba.query(start, end, [], conditions, filters, aggregations)
         if result == 0:
             raise GroupTagKeyNotFound
         else:
             return ObjectWrapper({
-                'values_seen': 0,  # TODO: model field
-                'uniqueValues': 0,  # TODO: api field
+                'values_seen': result,  # TODO: model field
+                'uniqueValues': result,  # TODO: api field
                 'key': self.get_standardized_key(key),
                 'name': self.get_tag_key_label(key),
                 'group_id': group_id,
@@ -104,14 +104,14 @@ class SnubaTagStorage(TagStorage):
         }
         if group_id is not None:
             filters['issue'] = [group_id]
-        aggregations = [['count()', '', 'count']]
+        aggregations = [['uniq', 'tags.value', 'count']]
 
         result = snuba.query(start, end, ['tags.key'], [], filters, aggregations,
                              limit=limit, orderby='-count', arrayjoin='tags')
 
         return [ObjectWrapper({
-            'values_seen': 0,  # TODO: model field
-            'uniqueValues': 0,  # TODO: api field
+            'values_seen': count,  # TODO: model field
+            'uniqueValues': count,  # TODO: api field
             'key': self.get_standardized_key(name),
             'name': self.get_tag_key_label(name),
             'group_id': group_id,
