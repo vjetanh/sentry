@@ -89,7 +89,8 @@ class SnubaTagStorage(TagStorage):
             raise GroupTagKeyNotFound
         else:
             return ObjectWrapper({
-                'values_seen': 0,  # TODO
+                'values_seen': 0,  # TODO: model field
+                'uniqueValues': 0,  # TODO: api field
                 'key': self.get_standardized_key(key),
                 'name': self.get_tag_key_label(key),
                 'group_id': group_id,
@@ -109,7 +110,8 @@ class SnubaTagStorage(TagStorage):
                              limit=limit, orderby='-count', arrayjoin='tags')
 
         return [ObjectWrapper({
-            'values_seen': 0,  # TODO
+            'values_seen': 0,  # TODO: model field
+            'uniqueValues': 0,  # TODO: api field
             'key': self.get_standardized_key(name),
             'name': self.get_tag_key_label(name),
             'group_id': group_id,
@@ -240,7 +242,6 @@ class SnubaTagStorage(TagStorage):
         }) for name, val in six.iteritems(result)]
 
     def get_group_tag_keys_and_top_values(self, project_id, group_id, environment_id, user=None):
-        from sentry import tagstore
         start, end = self.get_time_range()
         filters = {
             'project_id': [project_id],
@@ -259,15 +260,18 @@ class SnubaTagStorage(TagStorage):
 
         return [{
             'id': key,
-            'name': tagstore.get_tag_key_label(key),
-            'key': tagstore.get_standardized_key(key),
+            'name': self.get_tag_key_label(key),
+            'key': self.get_standardized_key(key),
             'uniqueValues': res['uniq'],
             'totalValues': res['count'],
             'topValues': [{
-                'id': val,
-                'name': tagstore.get_tag_value_label(key, val),
-                'key': tagstore.get_standardized_key(key),
+                'id': 0,
+                'name': self.get_tag_value_label(key, val),
+                'key': self.get_standardized_key(key),
+                'firstSeen': None,  # TODO
+                'lastSeen': None,  # TODO
                 'value': val,
+                'count': 0,  # TODO
             } for val in res['top']],
         } for key, res in six.iteritems(results)]
 
