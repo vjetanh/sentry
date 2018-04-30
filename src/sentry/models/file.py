@@ -163,7 +163,7 @@ class FileBlob(Model):
 class File(Model):
     __core__ = False
 
-    name = models.TextField()
+    name = models.CharField(max_length=255)
     type = models.CharField(max_length=64)
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
     headers = JSONField()
