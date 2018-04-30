@@ -89,8 +89,9 @@ class SnubaTagStorage(TagStorage):
             raise GroupTagKeyNotFound
         else:
             return ObjectWrapper({
-                'times_seen': result,
-                'key': key,
+                'values_seen': 0,  # TODO
+                'key': self.get_standardized_key(key),
+                'name': self.get_tag_key_label(key),
                 'group_id': group_id,
             })
 
@@ -108,8 +109,9 @@ class SnubaTagStorage(TagStorage):
                              limit=limit, orderby='-count', arrayjoin='tags')
 
         return [ObjectWrapper({
-            'times_seen': count,
-            'key': name,
+            'values_seen': 0,  # TODO
+            'key': self.get_standardized_key(name),
+            'name': self.get_tag_key_label(name),
             'group_id': group_id,
         }) for name, count in six.iteritems(result)]
 
