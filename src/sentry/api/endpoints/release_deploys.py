@@ -117,6 +117,7 @@ class ReleaseDeploysEndpoint(OrganizationReleasesBaseEndpoint):
             Release.objects.filter(id=release.id).update(
                 total_deploys=F('total_deploys') + 1,
                 last_deploy_id=deploy.id,
+                project__in=projects
             )
 
             ReleaseProjectEnvironment.objects.filter(release=release, environment=env).update(
