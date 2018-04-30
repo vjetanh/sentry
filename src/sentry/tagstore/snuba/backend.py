@@ -320,6 +320,8 @@ class SnubaTagStorage(TagStorage):
         }) for name, val in six.iteritems(result)]
 
     def get_group_event_ids(self, project_id, group_id, environment_id, tags):
+        from sentry.models import Event
+
         start, end = self.get_time_range()
         filters = {
             'environment': [environment_id],
@@ -333,7 +335,12 @@ class SnubaTagStorage(TagStorage):
         conditions = [or_conditions]
 
         events = snuba.query(start, end, ['event_id'], conditions, filters)
-        return events.keys()
+        return list(
+            Event.objects.filter(
+                project_id=project_id,
+                event_id__in=events.keys(),
+            ).values_list('id', flat=True)
+        )
 
     def get_group_ids_for_users(self, project_ids, event_users, limit=100):
         start, end = self.get_time_range()
