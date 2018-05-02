@@ -246,8 +246,9 @@ class SnubaTagStorage(TagStorage):
             ) for value, data in six.iteritems(result)
         ]
 
+    # TODO: Coming back to this later
+    """
     def get_group_tag_keys_and_top_values(self, project_id, group_id, environment_id, user=None):
-        from sentry import tagstore
         start, end = self.get_time_range()
         filters = {
             'project_id': [project_id],
@@ -266,17 +267,18 @@ class SnubaTagStorage(TagStorage):
 
         return [{
             'id': key,
-            'name': tagstore.get_tag_key_label(key),
-            'key': tagstore.get_standardized_key(key),
+            'name': self.get_tag_key_label(key),
+            'key': self.get_standardized_key(key),
             'uniqueValues': res['uniq'],
             'totalValues': res['count'],
             'topValues': [{
                 'id': val,
-                'name': tagstore.get_tag_value_label(key, val),
-                'key': tagstore.get_standardized_key(key),
+                'name': self.get_tag_value_label(key, val),
+                'key': self.get_standardized_key(key),
                 'value': val,
             } for val in res['top']],
         } for key, res in six.iteritems(results)]
+    """
 
     def get_release(self, project_id, group_id, first=True):
         start, end = self.get_time_range()
