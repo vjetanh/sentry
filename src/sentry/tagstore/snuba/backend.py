@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import functools
 from collections import defaultdict
 from datetime import timedelta
+from dateutil.parser import parse as parse_datetime
 from django.utils import timezone
 import six
 
@@ -27,6 +28,19 @@ from sentry.utils import snuba
 
 
 SEEN_COLUMN = 'timestamp'
+
+
+tag_value_data_transformers = {
+    'first_seen': parse_datetime,
+    'last_seen': parse_datetime,
+}
+
+
+def fix_tag_value_data(data):
+    for key, transformer in tag_value_data_transformers.items():
+        if key in data:
+            data[key] = transformer(data[key])
+    return data
 
 
 class SnubaTagStorage(TagStorage):
@@ -94,7 +108,6 @@ class SnubaTagStorage(TagStorage):
         if group_id is not None:
             filters['issue'] = [group_id]
         conditions = [[tag, '=', value]]
-        # TODO: Convert timestamps back to datetime
         aggregations = [
             ['count()', '', 'times_seen'],
             ['min', SEEN_COLUMN, 'first_seen'],
@@ -110,9 +123,9 @@ class SnubaTagStorage(TagStorage):
                 'value': value,
             })
             if group_id is None:
-                return TagKey(**data)
+                return TagKey(**fix_tag_value_data(data))
             else:
-                return GroupTagKey(group_id=group_id, **data)
+                return GroupTagKey(group_id=group_id, **fix_tag_value_data(data))
 
     def __get_tag_values(self, project_id, group_id, environment_id, key):
         start, end = self.get_time_range()
@@ -124,7 +137,6 @@ class SnubaTagStorage(TagStorage):
         if group_id is not None:
             filters['issue'] = [group_id]
         conditions = [[tag, '!=', '']]
-        # TODO: Convert timestamps back to datetime
         aggregations = [
             ['count()', '', 'times_seen'],
             ['min', SEEN_COLUMN, 'first_seen'],
@@ -138,7 +150,7 @@ class SnubaTagStorage(TagStorage):
         else:
             ctor = functools.partial(GroupTagValue, group_id=group_id)
 
-        return [ctor(key=key, value=value, **data) for value, data in result.items()]
+        return [ctor(key=key, value=value, **fix_tag_value_data(data)) for value, data in result.items()]
 
     def get_tag_key(self, project_id, environment_id, key, status=TagKeyStatus.VISIBLE):
         assert status is TagKeyStatus.VISIBLE
@@ -190,7 +202,7 @@ class SnubaTagStorage(TagStorage):
                 group_id=issue,
                 key=key,
                 value=value,
-                **data
+                **fix_tag_value_data(data)
             ) for issue, data in six.iteritems(result)
         }
 
@@ -229,7 +241,7 @@ class SnubaTagStorage(TagStorage):
                 group_id=group_id,
                 key=key,
                 value=value,
-                **data
+                **fix_tag_value_data(data)
             ) for value, data in six.iteritems(result)
         ]
 
@@ -302,7 +314,6 @@ class SnubaTagStorage(TagStorage):
         # this method is already dealing with version strings rather than
         # release ids which would need to be translated by the snuba util.
         # XXX: This should also be `sentry:release`
-        # TODO: Convert timestamps back to datetime
         key = 'release'
         conditions = [[key, 'IN', versions]]
         aggregations = [
@@ -319,7 +330,7 @@ class SnubaTagStorage(TagStorage):
             TagValue(
                 key=key,
                 value=value,
-                **data
+                **fix_tag_value_data(data)
             ) for value, data in six.iteritems(result)
         ]
 
@@ -369,7 +380,6 @@ class SnubaTagStorage(TagStorage):
             ('ip_address', 'IN', [eu.ip_address for eu in event_users if eu.ip_address]),
         ] if cond[2] != []]
         conditions = [or_conditions]
-        # TODO: Convert timestamps back to datetime
         aggregations = [
             ['count()', '', 'times_seen'],
             ['min', SEEN_COLUMN, 'first_seen'],
@@ -383,7 +393,7 @@ class SnubaTagStorage(TagStorage):
             GroupTagValue(
                 key='sentry:user',
                 value=name,
-                **data
+                **fix_tag_value_data(data)
             ) for name, data in six.iteritems(result)
         ]
 
