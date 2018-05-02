@@ -156,7 +156,7 @@ exports[`Sidebar SidebarDropdown can open Sidebar org/name dropdown menu 1`] = `
   }
 >
   <div
-    className="css-1d11loe-OrgAndUserMenu-SidebarDropdownMenu e1fowdfw8"
+    className="css-1d11loe-OrgAndUserMenu-SidebarDropdownMenu e1fowdfw9"
     onClick={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
@@ -500,7 +500,7 @@ exports[`Sidebar SidebarDropdown can open Sidebar org/name dropdown menu 1`] = `
     >
       <UserSummary>
         <div
-          className="css-1fpw0f9-UserSummary e1fowdfw0"
+          className="css-1fpw0f9-UserSummary e1fowdfw1"
         >
           <UserBadgeNoOverflow
             avatarSize={24}
@@ -524,7 +524,7 @@ exports[`Sidebar SidebarDropdown can open Sidebar org/name dropdown menu 1`] = `
           >
             <UserBadge
               avatarSize={24}
-              className="css-1tz319h-UserBadgeNoOverflow e1fowdfw1"
+              className="css-1tz319h-UserBadgeNoOverflow e1fowdfw2"
               hideEmail={false}
               useLink={true}
               user={
@@ -546,10 +546,10 @@ exports[`Sidebar SidebarDropdown can open Sidebar org/name dropdown menu 1`] = `
               }
             >
               <StyledUserBadge
-                className="css-1tz319h-UserBadgeNoOverflow e1fowdfw1"
+                className="css-1tz319h-UserBadgeNoOverflow e1fowdfw2"
               >
                 <div
-                  className="e1fowdfw1 css-1dpgz1o-StyledUserBadge-UserBadgeNoOverflow ezs94r40"
+                  className="e1fowdfw2 css-1dpgz1o-StyledUserBadge-UserBadgeNoOverflow ezs94r40"
                 >
                   <StyledAvatar
                     size={24}
@@ -1471,4 +1471,392 @@ exports[`Sidebar can have onboarding feature 1`] = `
     </Component>
   </StyledSidebarPanel>
 </SidebarPanel>
+`;
+
+exports[`Sidebar renders without org and router 1`] = `
+<OrgAndUserMenu
+  innerRef={[Function]}
+  onClick={[Function]}
+  onMouseEnter={[Function]}
+  onMouseLeave={[Function]}
+  org={null}
+>
+  <div
+    className="css-1d11loe-OrgAndUserMenu-SidebarDropdownMenu e1fowdfw9"
+    onClick={[Function]}
+    onMouseEnter={[Function]}
+    onMouseLeave={[Function]}
+  >
+    <SidebarUserSummary
+      user={
+        Object {
+          "email": "foo@example.com",
+          "flags": Object {
+            "newsletter_consent_prompt": false,
+          },
+          "hasPasswordAuth": true,
+          "id": "1",
+          "isAuthenticated": true,
+          "name": "Foo Bar",
+          "options": Object {
+            "timezone": "UTC",
+          },
+          "permissions": Set {},
+          "username": "foo@example.com",
+        }
+      }
+    >
+      <UserSummary>
+        <div
+          className="css-1fpw0f9-UserSummary e1fowdfw1"
+        >
+          <UserBadgeNoOverflow
+            avatarSize={24}
+            user={
+              Object {
+                "email": "foo@example.com",
+                "flags": Object {
+                  "newsletter_consent_prompt": false,
+                },
+                "hasPasswordAuth": true,
+                "id": "1",
+                "isAuthenticated": true,
+                "name": "Foo Bar",
+                "options": Object {
+                  "timezone": "UTC",
+                },
+                "permissions": Set {},
+                "username": "foo@example.com",
+              }
+            }
+          >
+            <UserBadge
+              avatarSize={24}
+              className="css-1tz319h-UserBadgeNoOverflow e1fowdfw2"
+              hideEmail={false}
+              useLink={true}
+              user={
+                Object {
+                  "email": "foo@example.com",
+                  "flags": Object {
+                    "newsletter_consent_prompt": false,
+                  },
+                  "hasPasswordAuth": true,
+                  "id": "1",
+                  "isAuthenticated": true,
+                  "name": "Foo Bar",
+                  "options": Object {
+                    "timezone": "UTC",
+                  },
+                  "permissions": Set {},
+                  "username": "foo@example.com",
+                }
+              }
+            >
+              <StyledUserBadge
+                className="css-1tz319h-UserBadgeNoOverflow e1fowdfw2"
+              >
+                <div
+                  className="e1fowdfw2 css-1dpgz1o-StyledUserBadge-UserBadgeNoOverflow ezs94r40"
+                >
+                  <StyledAvatar
+                    size={24}
+                    user={
+                      Object {
+                        "email": "foo@example.com",
+                        "flags": Object {
+                          "newsletter_consent_prompt": false,
+                        },
+                        "hasPasswordAuth": true,
+                        "id": "1",
+                        "isAuthenticated": true,
+                        "name": "Foo Bar",
+                        "options": Object {
+                          "timezone": "UTC",
+                        },
+                        "permissions": Set {},
+                        "username": "foo@example.com",
+                      }
+                    }
+                  >
+                    <Component
+                      className="css-1u6j7yz-StyledAvatar ezs94r44"
+                      size={24}
+                      user={
+                        Object {
+                          "email": "foo@example.com",
+                          "flags": Object {
+                            "newsletter_consent_prompt": false,
+                          },
+                          "hasPasswordAuth": true,
+                          "id": "1",
+                          "isAuthenticated": true,
+                          "name": "Foo Bar",
+                          "options": Object {
+                            "timezone": "UTC",
+                          },
+                          "permissions": Set {},
+                          "username": "foo@example.com",
+                        }
+                      }
+                    >
+                      <Avatar
+                        className="css-1u6j7yz-StyledAvatar ezs94r44"
+                        hasTooltip={false}
+                        size={24}
+                        user={
+                          Object {
+                            "email": "foo@example.com",
+                            "flags": Object {
+                              "newsletter_consent_prompt": false,
+                            },
+                            "hasPasswordAuth": true,
+                            "id": "1",
+                            "isAuthenticated": true,
+                            "name": "Foo Bar",
+                            "options": Object {
+                              "timezone": "UTC",
+                            },
+                            "permissions": Set {},
+                            "username": "foo@example.com",
+                          }
+                        }
+                      >
+                        <UserAvatar
+                          className="css-1u6j7yz-StyledAvatar ezs94r44"
+                          gravatar={true}
+                          hasTooltip={false}
+                          size={24}
+                          user={
+                            Object {
+                              "email": "foo@example.com",
+                              "flags": Object {
+                                "newsletter_consent_prompt": false,
+                              },
+                              "hasPasswordAuth": true,
+                              "id": "1",
+                              "isAuthenticated": true,
+                              "name": "Foo Bar",
+                              "options": Object {
+                                "timezone": "UTC",
+                              },
+                              "permissions": Set {},
+                              "username": "foo@example.com",
+                            }
+                          }
+                        >
+                          <BaseAvatar
+                            className="css-1u6j7yz-StyledAvatar ezs94r44"
+                            gravatarId="foo@example.com"
+                            hasTooltip={false}
+                            letterId="foo@example.com"
+                            size={24}
+                            style={Object {}}
+                            title="Foo Bar"
+                            tooltip="Foo Bar (foo@example.com)"
+                            type="gravatar"
+                          >
+                            <Tooltip
+                              disabled={true}
+                              title="Foo Bar (foo@example.com)"
+                            >
+                              <StyledBaseAvatar
+                                className="avatar css-1u6j7yz-StyledAvatar ezs94r44"
+                                style={
+                                  Object {
+                                    "height": "24px",
+                                    "width": "24px",
+                                  }
+                                }
+                              >
+                                <span
+                                  className="avatar ezs94r44 css-1dbvbxh-StyledBaseAvatar-StyledAvatar e1z0ohzl0"
+                                  style={
+                                    Object {
+                                      "height": "24px",
+                                      "width": "24px",
+                                    }
+                                  }
+                                >
+                                  <img
+                                    onError={[Function]}
+                                    onLoad={[Function]}
+                                    src="undefined/avatar/b48def645758b95537d4424c84d1a9ff?d=blank&s=32"
+                                  />
+                                </span>
+                              </StyledBaseAvatar>
+                            </Tooltip>
+                          </BaseAvatar>
+                        </UserAvatar>
+                      </Avatar>
+                    </Component>
+                  </StyledAvatar>
+                  <StyledNameAndEmail>
+                    <div
+                      className="css-9l6b2w-StyledNameAndEmail ezs94r41"
+                    >
+                      <StyledName
+                        hideEmail={false}
+                        to="/settings/undefined/members/1"
+                        useLink={true}
+                      >
+                        <Component
+                          className="css-1tgyp3k-StyledName ezs94r43"
+                          hideEmail={false}
+                          to="/settings/undefined/members/1"
+                          useLink={true}
+                        >
+                          <Link
+                            className="css-1tgyp3k-StyledName ezs94r43"
+                            to="/settings/undefined/members/1"
+                          >
+                            <Link
+                              className="css-1tgyp3k-StyledName ezs94r43"
+                              onlyActiveOnIndex={false}
+                              style={Object {}}
+                              to="/settings/undefined/members/1"
+                            >
+                              <a
+                                className="css-1tgyp3k-StyledName ezs94r43"
+                                onClick={[Function]}
+                                style={Object {}}
+                              >
+                                Foo Bar
+                              </a>
+                            </Link>
+                          </Link>
+                        </Component>
+                      </StyledName>
+                      <StyledEmail>
+                        <div
+                          className="css-g5deqf-StyledEmail ezs94r42"
+                        >
+                          foo@example.com
+                        </div>
+                      </StyledEmail>
+                    </div>
+                  </StyledNameAndEmail>
+                </div>
+              </StyledUserBadge>
+            </UserBadge>
+          </UserBadgeNoOverflow>
+        </div>
+      </UserSummary>
+    </SidebarUserSummary>
+    <div>
+      <SidebarMenuItem
+        to="/settings/account/"
+      >
+        <MenuItemLink
+          to="/settings/account/"
+        >
+          <Component
+            className="css-1vsrn4x-MenuItemLink ebifsjx1"
+            to="/settings/account/"
+          >
+            <Link
+              className="css-1vsrn4x-MenuItemLink ebifsjx1"
+              to="/settings/account/"
+            >
+              <Link
+                className="css-1vsrn4x-MenuItemLink ebifsjx1"
+                onlyActiveOnIndex={false}
+                style={Object {}}
+                to="/settings/account/"
+              >
+                <a
+                  className="css-1vsrn4x-MenuItemLink ebifsjx1"
+                  onClick={[Function]}
+                  style={Object {}}
+                >
+                  <MenuItemLabel
+                    hasMenu={false}
+                  >
+                    <span
+                      className="css-3xcmix-MenuItemLabel-MenuItemLabel ebifsjx0"
+                    >
+                      User settings
+                    </span>
+                  </MenuItemLabel>
+                </a>
+              </Link>
+            </Link>
+          </Component>
+        </MenuItemLink>
+      </SidebarMenuItem>
+      <SidebarMenuItem
+        to="/settings/account/api/"
+      >
+        <MenuItemLink
+          to="/settings/account/api/"
+        >
+          <Component
+            className="css-1vsrn4x-MenuItemLink ebifsjx1"
+            to="/settings/account/api/"
+          >
+            <Link
+              className="css-1vsrn4x-MenuItemLink ebifsjx1"
+              to="/settings/account/api/"
+            >
+              <Link
+                className="css-1vsrn4x-MenuItemLink ebifsjx1"
+                onlyActiveOnIndex={false}
+                style={Object {}}
+                to="/settings/account/api/"
+              >
+                <a
+                  className="css-1vsrn4x-MenuItemLink ebifsjx1"
+                  onClick={[Function]}
+                  style={Object {}}
+                >
+                  <MenuItemLabel
+                    hasMenu={false}
+                  >
+                    <span
+                      className="css-3xcmix-MenuItemLabel-MenuItemLabel ebifsjx0"
+                    >
+                      API keys
+                    </span>
+                  </MenuItemLabel>
+                </a>
+              </Link>
+            </Link>
+          </Component>
+        </MenuItemLink>
+      </SidebarMenuItem>
+      <SidebarMenuItem
+        href="/auth/logout/"
+      >
+        <MenuItemLink
+          href="/auth/logout/"
+        >
+          <Component
+            className="css-1vsrn4x-MenuItemLink ebifsjx1"
+            href="/auth/logout/"
+          >
+            <Link
+              className="css-1vsrn4x-MenuItemLink ebifsjx1"
+              href="/auth/logout/"
+            >
+              <a
+                className="css-1vsrn4x-MenuItemLink ebifsjx1"
+                href="/auth/logout/"
+              >
+                <MenuItemLabel
+                  hasMenu={false}
+                >
+                  <span
+                    className="css-3xcmix-MenuItemLabel-MenuItemLabel ebifsjx0"
+                  >
+                    Sign out
+                  </span>
+                </MenuItemLabel>
+              </a>
+            </Link>
+          </Component>
+        </MenuItemLink>
+      </SidebarMenuItem>
+    </div>
+  </div>
+</OrgAndUserMenu>
 `;
