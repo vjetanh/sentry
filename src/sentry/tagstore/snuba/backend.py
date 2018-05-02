@@ -170,8 +170,8 @@ class SnubaTagStorage(TagStorage):
     def get_group_tag_key(self, project_id, group_id, environment_id, key):
         return self.__get_tag_key(project_id, group_id, environment_id, key)
 
-    def get_group_tag_keys(self, project_id, group_id, environment_id):
-        return self.__get_tag_keys(project_id, group_id, environment_id)
+    def get_group_tag_keys(self, project_id, group_id, environment_id, limit=None):
+        return self.__get_tag_keys(project_id, group_id, environment_id, limit=limit)
 
     def get_group_tag_value(self, project_id, group_id, environment_id, key, value):
         return self.__get_tag_value(project_id, group_id, environment_id, key, value)
