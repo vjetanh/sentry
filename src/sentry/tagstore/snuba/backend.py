@@ -314,22 +314,27 @@ class SnubaTagStorage(TagStorage):
         # NB we add release as a condition rather than a filter because
         # this method is already dealing with version strings rather than
         # release ids which would need to be translated by the snuba util.
-        conditions = [['release', 'IN', versions]]
+        # XXX: This should also be `sentry:release`
+        # TODO: Convert timestamps back to datetime
+        key = 'release'
+        conditions = [[key, 'IN', versions]]
         aggregations = [
-            ['count()', '', 'count'],
+            ['count()', '', 'times_seen'],
             ['min', SEEN_COLUMN, 'first_seen'],
             ['max', SEEN_COLUMN, 'last_seen'],
         ]
 
-        result = snuba.query(start, end, ['release'], conditions, filters, aggregations)
+        # XXX: This doesn't group by project ID so isn't a 1:1 translation of
+        # the existing implementation
+        result = snuba.query(start, end, [key], conditions, filters, aggregations)
 
-        return [ObjectWrapper({
-            'times_seen': val['count'],
-            'first_seen': val['first_seen'],
-            'last_seen': val['last_seen'],
-            'key': 'release',
-            'value': name,
-        }) for name, val in six.iteritems(result)]
+        return [
+            TagValue(
+                key=key,
+                value=value,
+                **data
+            ) for value, data in six.iteritems(result)
+        ]
 
     def get_group_event_ids(self, project_id, group_id, environment_id, tags):
         start, end = self.get_time_range()
