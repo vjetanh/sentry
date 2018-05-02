@@ -22,6 +22,7 @@ from sentry.tagstore.exceptions import (
     TagKeyNotFound,
     TagValueNotFound,
 )
+from sentry.tagstore.types import TagKey, TagValue, GroupTagKey, GroupTagValue
 from sentry.utils import snuba
 
 
@@ -51,25 +52,7 @@ class SnubaTagStorage(TagStorage):
         end = timezone.now()
         return (end - timedelta(days=days), end)
 
-    def get_tag_key(self, project_id, environment_id, key, status=TagKeyStatus.VISIBLE):
-        try:
-            return self.get_group_tag_key(project_id, None, environment_id, key)
-        except GroupTagKeyNotFound:
-            raise TagKeyNotFound
-
-    def get_tag_keys(self, project_id, environment_id, status=TagKeyStatus.VISIBLE):
-        return self.get_group_tag_keys(project_id, None, environment_id)
-
-    def get_tag_value(self, project_id, environment_id, key, value):
-        try:
-            return self.get_group_tag_value(project_id, None, environment_id, key, value)
-        except GroupTagValueNotFound:
-            raise TagValueNotFound
-
-    def get_tag_values(self, project_id, environment_id, key):
-        return self.get_group_tag_values(project_id, None, environment_id, key)
-
-    def get_group_tag_key(self, project_id, group_id, environment_id, key):
+    def __get_tag_key(self, project_id, group_id, environment_id, key):
         start, end = self.get_time_range()
         tag = 'tags[{}]'.format(key)
         filters = {
@@ -79,17 +62,67 @@ class SnubaTagStorage(TagStorage):
         if group_id is not None:
             filters['issue'] = [group_id]
         conditions = [[tag, '!=', '']]
-        aggregations = [['count()', '', 'count']]
+        aggregations = [['uniq', tag, 'unique_values']]
 
         result = snuba.query(start, end, [], conditions, filters, aggregations)
-        if result == 0:
-            raise GroupTagKeyNotFound
+        if result == 0:  # XXX: Isn't this a collision
+            raise TagKeyNotFound if group_id is None else GroupTagKeyNotFound
         else:
-            return ObjectWrapper({
-                'times_seen': result,
+            data = {
                 'key': key,
-                'group_id': group_id,
+                'values_seen': result,
+            }
+            if group_id is None:
+                return TagKey(**data)
+            else:
+                return GroupTagKey(group_id=group_id, **data)
+
+    def __get_tag_value(self, project_id, group_id, environment_id, key, value):
+        start, end = self.get_time_range()
+        tag = 'tags[{}]'.format(key)
+        filters = {
+            'project_id': [project_id],
+            'environment': [environment_id],
+        }
+        if group_id is not None:
+            filters['issue'] = [group_id]
+        conditions = [
+            [tag, '=', value]
+        ]
+        aggregations = [
+            ['count()', '', 'times_seen'],
+            ['min', 'timestamp', 'first_seen'],
+            ['max', 'timestamp', 'last_seen'],
+        ]
+
+        data = snuba.query(start, end, [], conditions, filters, aggregations)
+        if not data:  # XXX: Is this right?
+            raise TagValueNotFound if group_id is None else GroupTagValueNotFound
+        else:
+            data.update({
+                'key': key,
+                'value': value,
             })
+            if group_id is None:
+                return TagKey(**data)
+            else:
+                return GroupTagKey(group_id=group_id, **data)
+
+    def get_tag_key(self, project_id, environment_id, key, status=TagKeyStatus.VISIBLE):
+        assert status is TagKeyStatus.VISIBLE
+        return self.__get_tag_key(project_id, None, environment_id, key)
+
+    def get_tag_keys(self, project_id, environment_id, status=TagKeyStatus.VISIBLE):
+        return self.get_group_tag_keys(project_id, None, environment_id)
+
+    def get_tag_value(self, project_id, environment_id, key, value):
+        return self.__get_tag_value(project_id, None, environment_id, key, value)
+
+    def get_tag_values(self, project_id, environment_id, key):
+        return self.get_group_tag_values(project_id, None, environment_id, key)
+
+    def get_group_tag_key(self, project_id, group_id, environment_id, key):
+        return self.__get_tag_key(project_id, group_id, environment_id, key)
 
     def get_group_tag_keys(self, project_id, group_id, environment_id, limit=1000):
         start, end = self.get_time_range()
@@ -111,31 +144,7 @@ class SnubaTagStorage(TagStorage):
         }) for name, count in six.iteritems(result)]
 
     def get_group_tag_value(self, project_id, group_id, environment_id, key, value):
-        from sentry.tagstore.exceptions import GroupTagValueNotFound
-        start, end = self.get_time_range()
-        tag = 'tags[{}]'.format(key)
-        filters = {
-            'project_id': [project_id],
-            'environment': [environment_id],
-        }
-        if group_id is not None:
-            filters['issue'] = [group_id]
-        conditions = [
-            [tag, '=', value]
-        ]
-        aggregations = [['count()', '', 'count']]
-
-        result = snuba.query(start, end, [], conditions, filters, aggregations)
-
-        if result == 0:
-            raise GroupTagValueNotFound
-        else:
-            return ObjectWrapper({
-                'times_seen': result,
-                'key': key,
-                'value': value,
-                'group_id': group_id,
-            })
+        return self.__get_tag_value(project_id, group_id, environment_id, key, value)
 
     def get_group_tag_values(self, project_id, group_id, environment_id, key):
         start, end = self.get_time_range()
@@ -393,101 +402,4 @@ class SnubaTagStorage(TagStorage):
 
     def get_group_ids_for_search_filter(
             self, project_id, environment_id, tags, candidates=None, limit=1000):
-        raise NotImplementedError
-
-    # Everything from here down is basically no-ops
-    def create_tag_key(self, project_id, environment_id, key, **kwargs):
-        return ObjectWrapper({
-            'times_seen': 0,
-            'key': key,
-            'update': lambda *args, **kwargs: None
-        })
-
-    def get_or_create_tag_key(self, project_id, environment_id, key, **kwargs):
-        try:
-            return self.get_tag_key(project_id, environment_id, key)
-        except TagKeyNotFound:
-            return (self.create_tag_key(project_id, environment_id, key, **kwargs), True)
-
-    def create_tag_value(self, project_id, environment_id, key, value, **kwargs):
-        return ObjectWrapper({
-            'times_seen': 0,
-            'key': key,
-            'value': value,
-            'update': lambda *args, **kwargs: None
-        })
-
-    def get_or_create_tag_value(self, project_id, environment_id, key, value, **kwargs):
-        try:
-            return self.get_tag_value(project_id, environment_id, key, value)
-        except TagValueNotFound:
-            return (self.create_tag_value(project_id, environment_id, key, value, **kwargs), True)
-
-    def create_group_tag_key(self, project_id, group_id, environment_id, key, **kwargs):
-        return ObjectWrapper({
-            'times_seen': 0,
-            'key': key,
-            'group_id': group_id,
-            'update': lambda *args, **kwargs: None
-        })
-
-    def get_or_create_group_tag_key(self, project_id, group_id, environment_id, key, **kwargs):
-        try:
-            return self.get_group_tag_key(project_id, group_id, environment_id, key)
-        except GroupTagKeyNotFound:
-            return (self.create_group_tag_key(
-                project_id, group_id, environment_id, key, **kwargs), True)
-
-    def create_group_tag_value(self, project_id, group_id, environment_id,
-                               key, value, **kwargs):
-        return ObjectWrapper({
-            'times_seen': 0,
-            'key': key,
-            'value': value,
-            'group_id': group_id,
-            'update': lambda *args, **kwargs: None
-        })
-
-    def get_or_create_group_tag_value(self, project_id, group_id,
-                                      environment_id, key, value, **kwargs):
-        try:
-            return self.get_group_tag_value(project_id, group_id, environment_id, key, value)
-        except GroupTagValueNotFound:
-            return (self.create_group_tag_value(project_id, group_id,
-                                                environment_id, key, value, **kwargs), True)
-
-    def create_event_tags(self, project_id, group_id, environment_id,
-                          event_id, tags, date_added=None):
-        pass
-
-    def delete_tag_key(self, project_id, key):
-        return []
-
-    def delete_all_group_tag_keys(self, project_id, group_id):
-        pass
-
-    def delete_all_group_tag_values(self, project_id, group_id):
-        pass
-
-    def incr_tag_value_times_seen(self, project_id, environment_id,
-                                  key, value, extra=None, count=1):
-        pass
-
-    def incr_group_tag_value_times_seen(self, project_id, group_id, environment_id,
-                                        key, value, extra=None, count=1):
-        pass
-
-    def update_group_for_events(self, project_id, event_ids, destination_id):
-        pass
-
-    def update_group_tag_key_values_seen(self, project_id, group_ids):
-        pass
-
-    def get_tag_value_qs(self, project_id, environment_id, key, query=None):
-        raise NotImplementedError
-
-    def get_group_tag_value_qs(self, project_id, group_id, environment_id, key, value=None):
-        raise NotImplementedError
-
-    def get_event_tag_qs(self, project_id, environment_id, key, value):
         raise NotImplementedError
