@@ -14,7 +14,6 @@ from datetime import timedelta
 from django.utils import timezone
 import six
 
-from sentry.api.serializers import Serializer, register
 from sentry.tagstore import TagKeyStatus
 from sentry.tagstore.base import TagStorage
 from sentry.tagstore.exceptions import (
@@ -28,18 +27,6 @@ from sentry.utils import snuba
 
 
 SEEN_COLUMN = 'timestamp'
-
-
-class ObjectWrapper(object):
-    def __init__(self, dictionary):
-        dictionary['id'] = 0
-        self.__dict__ = dictionary
-
-
-@register(ObjectWrapper)
-class ObjectWrapperSerializer(Serializer):
-    def serialize(self, obj, attrs, user):
-        return self.__dict__
 
 
 class SnubaTagStorage(TagStorage):
