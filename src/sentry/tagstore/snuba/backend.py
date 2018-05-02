@@ -382,8 +382,9 @@ class SnubaTagStorage(TagStorage):
             ('ip_address', 'IN', [eu.ip_address for eu in event_users if eu.ip_address]),
         ] if cond[2] != []]
         conditions = [or_conditions]
+        # TODO: Convert timestamps back to datetime
         aggregations = [
-            ['count()', '', 'count'],
+            ['count()', '', 'times_seen'],
             ['min', SEEN_COLUMN, 'first_seen'],
             ['max', SEEN_COLUMN, 'last_seen'],
         ]
@@ -391,13 +392,13 @@ class SnubaTagStorage(TagStorage):
         result = snuba.query(start, end, ['user_id'], conditions, filters,
                              aggregations, orderby='-last_seen', limit=limit)
 
-        return [ObjectWrapper({
-            'times_seen': val['count'],
-            'first_seen': val['first_seen'],
-            'last_seen': val['last_seen'],
-            'key': 'sentry:user',
-            'value': name,
-        }) for name, val in six.iteritems(result)]
+        return [
+            GroupTagValue(
+                key='sentry:user',
+                value=name,
+                **data
+            ) for name, data in six.iteritems(result)
+        ]
 
     def get_groups_user_counts(self, project_id, group_ids, environment_id):
         start, end = self.get_time_range()
