@@ -410,7 +410,7 @@ class SnubaTagStorage(TagStorage):
         aggregations = [['uniq', 'user_id', 'count']]
 
         result = snuba.query(start, end, ['issue'], None, filters, aggregations)
-        return defaultdict(int, result.items())
+        return defaultdict(int, {k: v for k, v in result.items() if v})
 
     def get_group_ids_for_search_filter(
             self, project_id, environment_id, tags, candidates=None, limit=1000):
