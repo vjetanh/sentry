@@ -230,22 +230,21 @@ class SnubaTagStorage(TagStorage):
         }
         conditions = [[tag, '!=', '']]
         aggregations = [
-            ['count()', '', 'count'],
+            ['count()', '', 'times_seen'],
             ['min', SEEN_COLUMN, 'first_seen'],
             ['max', SEEN_COLUMN, 'last_seen'],
         ]
 
         result = snuba.query(start, end, [tag], conditions, filters,
-                             aggregations, limit=limit, orderby='-count')
-
-        return [ObjectWrapper({
-            'times_seen': val['count'],
-            'first_seen': val['first_seen'],
-            'last_seen': val['last_seen'],
-            'key': key,
-            'value': name,
-            'group_id': group_id,
-        }) for name, val in six.iteritems(result)]
+                             aggregations, limit=limit, orderby='-times_seen')
+        return [
+            GroupTagValue(
+                group_id=group_id,
+                key=key,
+                value=value,
+                **data
+            ) for value, data in six.iteritems(result)
+        ]
 
     def get_group_tag_keys_and_top_values(self, project_id, group_id, environment_id, user=None):
         from sentry import tagstore
