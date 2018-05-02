@@ -8,6 +8,9 @@ class TagKey(object):
         self.values_seen = values_seen
         self.status = status
 
+    def __repr__(self):
+        return '<%s: %r>' % (type(self).__name__, vars(self))
+
 
 class TagValue(object):
     def __init__(self, key, value, times_seen, first_seen, last_seen):
@@ -17,12 +20,18 @@ class TagValue(object):
         self.first_seen = first_seen
         self.last_seen = last_seen
 
+    def __repr__(self):
+        return '<%s: %r>' % (type(self).__name__, vars(self))
+
 
 class GroupTagKey(object):
     def __init__(self, group_id, key, values_seen):
         self.group_id = group_id
         self.key = key
         self.values_seen = values_seen
+
+    def __repr__(self):
+        return '<%s: %r>' % (type(self).__name__, vars(self))
 
 
 class GroupTagValue(object):
@@ -33,6 +42,9 @@ class GroupTagValue(object):
         self.times_seen = times_seen
         self.first_seen = first_seen
         self.last_seen = last_seen
+
+    def __repr__(self):
+        return '<%s: %r>' % (type(self).__name__, vars(self))
 
 
 from sentry.api.serializers import Serializer, register
