@@ -67,7 +67,7 @@ class SnubaTagStorage(TagStorage):
         aggregations = [['uniq', tag, 'unique_values']]
 
         result = snuba.query(start, end, [], conditions, filters, aggregations)
-        if result == 0:  # XXX: Isn't this a collision
+        if result == 0:
             raise TagKeyNotFound if group_id is None else GroupTagKeyNotFound
         else:
             data = {
@@ -115,7 +115,7 @@ class SnubaTagStorage(TagStorage):
         ]
 
         data = snuba.query(start, end, [], conditions, filters, aggregations)
-        if not data:  # XXX: Is this right?
+        if not data:
             raise TagValueNotFound if group_id is None else GroupTagValueNotFound
         else:
             data.update({
