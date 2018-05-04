@@ -29,6 +29,11 @@ class AutoComplete extends React.Component {
      * Currently, this does not act as a "controlled" prop, only for initial state of dropdown
      */
     isOpen: PropTypes.bool,
+    /**
+     * If input should be considered an "actor". If there is another parent actor, then this should be `false`.
+     * e.g. You have a button that opens this <AutoComplete> in a dropdown.
+     */
+    inputIsActor: PropTypes.bool,
     onSelect: PropTypes.func,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
@@ -36,6 +41,7 @@ class AutoComplete extends React.Component {
 
   static defaultProps = {
     itemToString: i => i,
+    inputIsActor: true,
   };
 
   constructor(props) {
@@ -147,6 +153,11 @@ class AutoComplete extends React.Component {
     callIfFunction(onClick, item, e);
   };
 
+  handleMenuMouseDown = ({onClick} = {}, e) => {
+    // Cancel close menu from input blur (mouseDown event can occur before input blur :()
+    setTimeout(() => this.blurTimer && clearTimeout(this.blurTimer));
+  };
+
   /**
    * When an item is selected via clicking or using the keyboard (e.g. pressing "Enter")
    */
@@ -232,8 +243,9 @@ class AutoComplete extends React.Component {
     };
   };
 
-  getMenuProps = props => ({
-    ...props,
+  getMenuProps = menuProps => ({
+    ...menuProps,
+    onMouseDown: this.handleMenuMouseDown.bind(this, menuProps),
   });
 
   render() {
@@ -245,8 +257,16 @@ class AutoComplete extends React.Component {
         {dropdownMenuProps =>
           children({
             ...dropdownMenuProps,
+            getMenuProps: props =>
+              dropdownMenuProps.getMenuProps(this.getMenuProps(props)),
             getInputProps: props => {
-              return dropdownMenuProps.getActorProps(this.getInputProps(props));
+              const inputProps = this.getInputProps(props);
+
+              if (!this.props.inputIsActor) {
+                return inputProps;
+              }
+
+              return dropdownMenuProps.getActorProps(inputProps);
             },
             getItemProps: this.getItemProps,
             inputValue: this.state.inputValue,
